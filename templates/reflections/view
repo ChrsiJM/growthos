@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1>
+            <i class="fas fa-journal-whills me-2"></i>
+            {{ reflection.type }} Reflection - {{ reflection.created_at.strftime('%B %d, %Y') }}
+        </h1>
+        <div>
+            <a href="{{ url_for('reflections.edit', reflection_id=reflection.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{{ url_for('reflections.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Wins</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ reflection.wins }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Failures / Challenges</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ reflection.failures }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Lessons Learned</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ reflection.lessons }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Next Focus</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ reflection.next_focus }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

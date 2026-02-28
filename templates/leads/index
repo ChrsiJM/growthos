@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1><i class="fas fa-users me-2"></i>Lead Feedback Manager</h1>
+        <a href="{{ url_for('leads.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Lead
+        </a>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ leads|length }}</div>
+                <div class="stat-label">Total Leads</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-warning">{{ follow_ups_today }}</div>
+                <div class="stat-label">Follow-ups Today</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-danger">{{ overdue_follow_ups }}</div>
+                <div class="stat-label">Overdue Follow-ups</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-success">${{ "%.2f"|format(closed_revenue) }}</div>
+                <div class="stat-label">Closed Revenue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('leads.index') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="niche" class="form-label">Filter by Niche</label>
+                    <select class="form-select" id="niche" name="niche">
+                        <option value="">All Niches</option>
+                        {% for niche in niches %}
+                            <option value="{{ niche }}" {% if request.args.get('niche') == niche %}selected{% endif %}>
+                                {{ niche }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="interest" class="form-label">Filter by Interest</label>
+                    <select class="form-select" id="interest" name="interest">
+                        <option value="">All Interests</option>
+                        <option value="Hot" {% if request.args.get('interest') == 'Hot' %}selected{% endif %}>Hot</option>
+                        <option value="Warm" {% if request.args.get('interest') == 'Warm' %}selected{% endif %}>Warm</option>
+                        <option value="Cold" {% if request.args.get('interest') == 'Cold' %}selected{% endif %}>Cold</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter me-2"></i>Apply Filters
+                    </button>
+                    <a href="{{ url_for('leads.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Niche</th>
+                            <th>Source</th>
+                            <th>Interest</th>
+                            <th>Status</th>
+                            <th>Value</th>
+                            <th>Follow-up</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                            <tr class="{% if lead.follow_up_date and lead.follow_up_date < today and lead.status in ['Negotiating', 'Warm', 'Hot'] %}table-danger{% endif %}">
+                                <td>{{ lead.name }}</td>
+                                <td>{{ lead.niche or '-' }}</td>
+                                <td>{{ lead.source or '-' }}</td>
+                                <td>
+                                    {% if lead.interest_level == 'Hot' %}
+                                        <span class="badge bg-danger">Hot</span>
+                                    {% elif lead.interest_level == 'Warm' %}
+                                        <span class="badge bg-warning">Warm</span>
+                                    {% elif lead.interest_level == 'Cold' %}
+                                        <span class="badge bg-secondary">Cold</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if lead.status == 'Negotiating' %}bg-primary{% elif lead.status == 'Closed' %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ lead.status }}
+                                    </span>
+                                </td>
+                                <td>${{ "%.2f"|format(lead.expected_value) }}</td>
+                                <td>
+                                    {% if lead.follow_up_date %}
+                                        {{ lead.follow_up_date.strftime('%Y-%m-%d') }}
+                                        {% if lead.follow_up_date == today %}
+                                            <span class="badge bg-warning ms-1">Today</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('leads.edit', lead_id=lead.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('leads.delete', lead_id=lead.id) }}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if not leads %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No leads found</h5>
+                    <p class="text-muted">Start adding your first lead!</p>
+                    <a href="{{ url_for('leads.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Lead
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

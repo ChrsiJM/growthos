@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1>
+            <i class="fas fa-journal-whills me-2"></i>
+            {{ reflection.type }} Reflection - {{ reflection.created_at.strftime('%B %d, %Y') }}
+        </h1>
+        <div>
+            <a href="{{ url_for('reflections.edit', reflection_id=reflection.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{{ url_for('reflections.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Wins Card -->
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>Wins & Achievements
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if reflection.wins %}
+                        <p class="lead" style="white-space: pre-line;">{{ reflection.wins }}</p>
+                    {% else %}
+                        <p class="text-muted fst-italic">No wins recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Challenges Card -->
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Challenges & Failures
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if reflection.failures %}
+                        <p class="lead" style="white-space: pre-line;">{{ reflection.failures }}</p>
+                    {% else %}
+                        <p class="text-muted fst-italic">No challenges recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Lessons Card -->
+            <div class="card mb-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>Lessons Learned
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if reflection.lessons %}
+                        <p class="lead" style="white-space: pre-line;">{{ reflection.lessons }}</p>
+                    {% else %}
+                        <p class="text-muted fst-italic">No lessons recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Next Focus Card -->
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bullseye me-2"></i>Next Focus Areas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if reflection.next_focus %}
+                        <p class="lead" style="white-space: pre-line;">{{ reflection.next_focus }}</p>
+                    {% else %}
+                        <p class="text-muted fst-italic">No focus areas set</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Metadata Card -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Reflection Info
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> {{ reflection.type }}</p>
+                            <p><strong>Created:</strong> {{ reflection.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Last Updated:</strong> {{ reflection.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

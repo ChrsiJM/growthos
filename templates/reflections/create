@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-pen-fancy me-2 text-primary"></i>
+                        Write Reflection
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('reflections.create') }}">
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Reflection Type</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="Weekly">Weekly Reflection</option>
+                                <option value="Monthly">Monthly Reflection</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="wins" class="form-label text-success">
+                                <i class="fas fa-trophy me-2"></i>Wins
+                            </label>
+                            <textarea class="form-control" id="wins" name="wins" rows="3" 
+                                      placeholder="What went well? What did you achieve?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="failures" class="form-label text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Failures / Challenges
+                            </label>
+                            <textarea class="form-control" id="failures" name="failures" rows="3" 
+                                      placeholder="What didn't go well? What challenges did you face?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lessons" class="form-label text-info">
+                                <i class="fas fa-graduation-cap me-2"></i>Lessons Learned
+                            </label>
+                            <textarea class="form-control" id="lessons" name="lessons" rows="3" 
+                                      placeholder="What did you learn from your experiences?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="next_focus" class="form-label text-primary">
+                                <i class="fas fa-bullseye me-2"></i>Next Focus
+                            </label>
+                            <textarea class="form-control" id="next_focus" name="next_focus" rows="3" 
+                                      placeholder="What will you focus on next?"></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reflections.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Reflection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

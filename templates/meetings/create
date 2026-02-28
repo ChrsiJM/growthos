@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-plus me-2 text-primary"></i>
+                        Schedule Meeting/Event
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('meetings.create') }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Date & Time *</label>
+                            <input type="datetime-local" class="form-control" id="event_date" name="event_date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reminder_note" class="form-label">Reminder Note</label>
+                            <textarea class="form-control" id="reminder_note" name="reminder_note" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="linked_lead_id" class="form-label">Link to Lead (Optional)</label>
+                                <select class="form-select" id="linked_lead_id" name="linked_lead_id">
+                                    <option value="">-- Select Lead --</option>
+                                    {% for lead in leads %}
+                                        <option value="{{ lead.id }}">{{ lead.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="linked_project_id" class="form-label">Link to Project (Optional)</label>
+                                <select class="form-select" id="linked_project_id" name="linked_project_id">
+                                    <option value="">-- Select Project --</option>
+                                    {% for project in projects %}
+                                        <option value="{{ project.id }}">{{ project.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('meetings.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Schedule
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

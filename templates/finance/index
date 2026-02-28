@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1><i class="fas fa-chart-line me-2"></i>Financial Manager</h1>
+        <a href="{{ url_for('finance.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Weekly Finance
+        </a>
+    </div>
+
+    <!-- Current Month Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(40,167,69,0.1); color: #28a745;">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(total_income) }}</div>
+                <div class="stat-label">Total Income (Month)</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(220,53,69,0.1); color: #dc3545;">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(total_expenses) }}</div>
+                <div class="stat-label">Total Expenses (Month)</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(0,123,255,0.1); color: #007bff;">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(net_profit) }}</div>
+                <div class="stat-label">Net Profit (Month)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Week Card -->
+    {% if current_week %}
+        <div class="card mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-week me-2"></i>
+                    Current Week ({{ current_week.week_start_date.strftime('%b %d') }} - {{ current_week.week_end_date.strftime('%b %d, %Y') }})
+                    {% if not current_week.review_completed %}
+                        <span class="badge bg-warning float-end">Review Pending</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Income Source</h6>
+                        <p>{{ current_week.income_source or 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <h6>Income</h6>
+                        <p class="text-success">${{ "%.2f"|format(current_week.total_income) }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <h6>Expenses</h6>
+                        <p class="text-danger">${{ "%.2f"|format(current_week.total_expenses) }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <h6>Balance</h6>
+                        <p class="text-primary">${{ "%.2f"|format(current_week.remaining_balance) }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('finance.edit', finance_id=current_week.id) }}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Update
+                        </a>
+                    </div>
+                </div>
+                {% if current_week.expense_description %}
+                    <div class="mt-3">
+                        <h6>Expense Details</h6>
+                        <p class="text-muted">{{ current_week.expense_description }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No finance record for current week. 
+            <a href="{{ url_for('finance.create') }}" class="alert-link">Add one now</a>.
+        </div>
+    {% endif %}
+
+    <!-- Historical Records -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Weekly Financial History</h5>
+        </div>
+        <div class="card-body">
+            {% if weekly_records %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Income Source</th>
+                                <th>Income</th>
+                                <th>Expenses</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in weekly_records %}
+                                <tr>
+                                    <td>
+                                        {{ record.week_start_date.strftime('%b %d') }} - 
+                                        {{ record.week_end_date.strftime('%b %d, %Y') }}
+                                    </td>
+                                    <td>{{ record.income_source or '-' }}</td>
+                                    <td class="text-success">${{ "%.2f"|format(record.total_income) }}</td>
+                                    <td class="text-danger">${{ "%.2f"|format(record.total_expenses) }}</td>
+                                    <td class="text-primary">${{ "%.2f"|format(record.remaining_balance) }}</td>
+                                    <td>
+                                        {% if record.review_completed %}
+                                            <span class="badge bg-success">Reviewed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('finance.edit', finance_id=record.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('finance.delete', finance_id=record.id) }}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Delete this record?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center py-3">No financial records yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

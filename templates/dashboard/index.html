@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 mb-4">Dashboard</h1>
+    
+    <!-- Stats Cards Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(13,110,253,0.1); color: #0d6efd;">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-value">{{ todays_tasks|length }}</div>
+                <div class="stat-label">Today's Tasks</div>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up"></i> Execution rate: {{ execution_rate }}%
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(25,135,84,0.1); color: #198754;">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-value">{{ streak }}</div>
+                <div class="stat-label">Day Streak</div>
+                <div class="mt-2">
+                    <small class="text-muted">Keep it up! 🔥</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(255,193,7,0.1); color: #ffc107;">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(potential_revenue) }}</div>
+                <div class="stat-label">Potential Revenue</div>
+                <div class="mt-2">
+                    <small class="text-warning">{{ leads_count|default(0) }} active leads</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(13,110,253,0.1); color: #0d6efd;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(closed_revenue) }}</div>
+                <div class="stat-label">Closed Revenue</div>
+                <div class="mt-2">
+                    <small class="text-success">This month</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(111,66,193,0.1); color: #6f42c1;">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="stat-value">{{ active_projects }}</div>
+                <div class="stat-label">Active Projects</div>
+                <div class="mt-2">
+                    <small class="text-muted">In progress</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(220,53,69,0.1); color: #dc3545;">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="stat-value">{{ follow_ups_today }}</div>
+                <div class="stat-label">Follow-ups Today</div>
+                <div class="mt-2">
+                    <small class="text-danger">Due now</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(32,201,151,0.1); color: #20c997;">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-value">${{ "%.2f"|format(weekly_balance) }}</div>
+                <div class="stat-label">Weekly Balance</div>
+                <div class="mt-2">
+                    <small class="text-success">Available</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(13,110,253,0.1); color: #0d6efd;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value">{{ revenue_progress }}%</div>
+                <div class="stat-label">Revenue Goal</div>
+                <div class="mt-2">
+                    <small class="text-muted">${{ "%.2f"|format(monthly_revenue) }} / ${{ "%.2f"|format(monthly_goal) }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Today's Tasks -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-tasks"></i> Today's Tasks
+                    <a href="{{ url_for('planner.create') }}" class="btn btn-sm btn-primary float-end">
+                        <i class="fas fa-plus"></i> Add Task
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if todays_tasks %}
+                        <div class="list-group">
+                            {% for task in todays_tasks %}
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ task.title }}</h6>
+                                        <small class="text-muted">{{ task.description|truncate(50) }}</small>
+                                    </div>
+                                    <span class="badge badge-status badge-{{ task.status|lower }}">
+                                        {{ task.status }}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No tasks for today. Time to plan! 📝</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Meetings -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt"></i> Upcoming Meetings
+                    <a href="{{ url_for('meetings.create') }}" class="btn btn-sm btn-primary float-end">
+                        <i class="fas fa-plus"></i> Schedule
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_meetings %}
+                        <div class="list-group">
+                            {% for meeting in upcoming_meetings %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ meeting.title }}</h6>
+                                        <small class="text-muted">
+                                            {{ meeting.event_date.strftime('%b %d, %I:%M %p') }}
+                                        </small>
+                                    </div>
+                                    {% if meeting.linked_lead or meeting.linked_project %}
+                                        <small class="text-muted">
+                                            {% if meeting.linked_lead %}
+                                                <i class="fas fa-user"></i> {{ meeting.linked_lead.name }}
+                                            {% endif %}
+                                            {% if meeting.linked_project %}
+                                                <i class="fas fa-project-diagram"></i> {{ meeting.linked_project.name }}
+                                            {% endif %}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No upcoming meetings</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Projects -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-project-diagram"></i> Active Projects
+                    <a href="{{ url_for('projects.create') }}" class="btn btn-sm btn-primary float-end">
+                        <i class="fas fa-plus"></i> New Project
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for project in current_user.projects.filter_by(status='Active').limit(3) %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ project.name }}</h6>
+                                        <p class="card-text small text-muted">{{ project.description|truncate(50) }}</p>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ project.progress_percentage }}%"
+                                                 aria-valuenow="{{ project.progress_percentage }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ project.progress_percentage }}% Complete</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-12">
+                                <p class="text-muted text-center py-3">No active projects. Start something new! 🚀</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

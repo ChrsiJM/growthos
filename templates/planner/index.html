@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1><i class="fas fa-calendar-check me-2"></i>Daily Planner</h1>
+        <a href="{{ url_for('planner.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Task
+        </a>
+    </div>
+
+    <!-- Date Navigation -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <a href="{{ url_for('planner.index', date=(selected_date - timedelta(days=1)).isoformat()) }}" 
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-chevron-left"></i> Previous Day
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <form method="GET" action="{{ url_for('planner.index') }}" class="d-inline-block">
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="date" 
+                                   value="{{ selected_date.isoformat() }}" 
+                                   onchange="this.form.submit()">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-calendar-alt"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{{ url_for('planner.index', date=(selected_date + timedelta(days=1)).isoformat()) }}" 
+                       class="btn btn-outline-primary">
+                        Next Day <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Week Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ week_stats.total }}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-success">{{ week_stats.achieved }}</div>
+                <div class="stat-label">Achieved</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-danger">{{ week_stats.missed }}</div>
+                <div class="stat-label">Missed</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value text-warning">{{ week_stats.carried }}</div>
+                <div class="stat-label">Carried</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks for Selected Date -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-tasks me-2"></i>
+                Tasks for {{ selected_date.strftime('%A, %B %d, %Y') }}
+                {% if selected_date == today %}
+                    <span class="badge bg-success ms-2">Today</span>
+                {% elif selected_date < today %}
+                    <span class="badge bg-secondary ms-2">Past</span>
+                {% else %}
+                    <span class="badge bg-info ms-2">Future</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if tasks %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Feedback</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                                <tr>
+                                    <td>
+                                        <span class="badge 
+                                            {% if task.status == 'Pending' %}bg-warning
+                                            {% elif task.status == 'Achieved' %}bg-success
+                                            {% elif task.status == 'Missed' %}bg-danger
+                                            {% elif task.status == 'Carried' %}bg-info
+                                            {% endif %}">
+                                            {{ task.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ task.title }}</td>
+                                    <td>{{ task.description|truncate(50) if task.description else '-' }}</td>
+                                    <td>
+                                        {% if task.feedback %}
+                                            <span class="text-muted">{{ task.feedback|truncate(30) }}</span>
+                                        {% else %}
+                                            <span class="text-muted fst-italic">No feedback</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('planner.edit', task_id=task.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('planner.delete', task_id=task.id) }}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Are you sure you want to delete this task?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No tasks for this day</h5>
+                    <p class="text-muted">Start planning your day by adding some tasks!</p>
+                    <a href="{{ url_for('planner.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Your First Task
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-submit date form when date changes
+    document.querySelector('input[type="date"]').addEventListener('change', function() {
+        this.form.submit();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2 text-primary"></i>
+                        Edit Lead: {{ lead.name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('leads.edit', lead_id=lead.id) }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ lead.name }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="niche" class="form-label">Niche</label>
+                                <input type="text" class="form-control" id="niche" name="niche" value="{{ lead.niche or '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="source" class="form-label">Source</label>
+                                <select class="form-select" id="source" name="source">
+                                    <option value="">Select Source</option>
+                                    <option value="Instagram" {% if lead.source == 'Instagram' %}selected{% endif %}>Instagram</option>
+                                    <option value="Cold DM" {% if lead.source == 'Cold DM' %}selected{% endif %}>Cold DM</option>
+                                    <option value="Referral" {% if lead.source == 'Referral' %}selected{% endif %}>Referral</option>
+                                    <option value="Website" {% if lead.source == 'Website' %}selected{% endif %}>Website</option>
+                                    <option value="Event" {% if lead.source == 'Event' %}selected{% endif %}>Event</option>
+                                    <option value="Other" {% if lead.source == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="interest_level" class="form-label">Interest Level</label>
+                                <select class="form-select" id="interest_level" name="interest_level">
+                                    <option value="Hot" {% if lead.interest_level == 'Hot' %}selected{% endif %}>Hot</option>
+                                    <option value="Warm" {% if lead.interest_level == 'Warm' %}selected{% endif %}>Warm</option>
+                                    <option value="Cold" {% if lead.interest_level == 'Cold' %}selected{% endif %}>Cold</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="Negotiating" {% if lead.status == 'Negotiating' %}selected{% endif %}>Negotiating</option>
+                                    <option value="Closed" {% if lead.status == 'Closed' %}selected{% endif %}>Closed</option>
+                                    <option value="Not Interested" {% if lead.status == 'Not Interested' %}selected{% endif %}>Not Interested</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="expected_value" class="form-label">Expected Value ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="expected_value" name="expected_value" value="{{ lead.expected_value }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="feedback" class="form-label">Feedback</label>
+                            <textarea class="form-control" id="feedback" name="feedback" rows="3">{{ lead.feedback or '' }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="next_action" class="form-label">Next Action</label>
+                                <input type="text" class="form-control" id="next_action" name="next_action" value="{{ lead.next_action or '' }}">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="follow_up_date" class="form-label">Follow-up Date</label>
+                                <input type="date" class="form-control" id="follow_up_date" name="follow_up_date" 
+                                       value="{{ lead.follow_up_date.isoformat() if lead.follow_up_date else '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('leads.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Lead
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

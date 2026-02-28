@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1><i class="fas fa-lightbulb me-2"></i>Idea Vault</h1>
+        <a href="{{ url_for('ideas.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Idea
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('ideas.index') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Filter by Category</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {% if request.args.get('category') == category %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter me-2"></i>Apply Filter
+                    </button>
+                    <a href="{{ url_for('ideas.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ideas Grid -->
+    <div class="row">
+        {% for idea in ideas %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-white">
+                        <span class="badge bg-info">{{ idea.category }}</span>
+                        <small class="text-muted float-end">
+                            {{ idea.date_created.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ idea.title }}</h5>
+                        <p class="card-text">{{ idea.description|truncate(150) }}</p>
+                        
+                        {% if idea.linked_project %}
+                            <div class="alert alert-success py-2 small">
+                                <i class="fas fa-link me-1"></i>
+                                Linked to: <strong>{{ idea.linked_project.name }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('ideas.edit', idea_id=idea.id) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            {% if not idea.linked_project %}
+                                <form method="POST" action="{{ url_for('ideas.convert_to_project', idea_id=idea.id) }}" 
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-outline-success btn-sm" 
+                                            onclick="return confirm('Convert this idea into a project?')">
+                                        <i class="fas fa-project-diagram"></i> Convert
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <a href="{{ url_for('ideas.delete', idea_id=idea.id) }}" 
+                               class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Delete this idea?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-lightbulb fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No ideas yet</h5>
+                    <p class="text-muted">Capture your first brilliant idea!</p>
+                    <a href="{{ url_for('ideas.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Idea
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
