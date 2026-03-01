@@ -3,14 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
+import os
 
 # Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-
-def create_app( config_class=Config ):
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -21,9 +21,9 @@ def create_app( config_class=Config ):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
 
-    # Import models (using the files directly)
+    # Import models
     from models import user, daily_plan, lead, project, idea, event, reflection, finance
-
+    
     # Register blueprints
     from routes.auth import auth_bp
     from routes.dashboard import dashboard_bp
@@ -34,7 +34,7 @@ def create_app( config_class=Config ):
     from routes.meetings import meetings_bp
     from routes.reflections import reflections_bp
     from routes.finance import finance_bp
-
+    
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/')
     app.register_blueprint(planner_bp, url_prefix='/planner')
@@ -47,6 +47,13 @@ def create_app( config_class=Config ):
 
     # Create tables if they don't exist
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            print("✅ Database tables created successfully!")
+        except Exception as e:
+            print(f"⚠️ Database tables may already exist: {e}")
 
     return app
+
+# For production with gunicorn
+app = create_app()
