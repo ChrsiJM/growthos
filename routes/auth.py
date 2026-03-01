@@ -1,13 +1,13 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, current_user, login_required
-from app import db
+from extensions import db  # Changed from 'app import db'
 from models.user import User
-from urllib.parse import urlparse  # Replace werkzeug.urls import
+from urllib.parse import urlparse
 from flask import Blueprint
 
 auth_bp = Blueprint('auth', __name__)
 
-
+# ... rest of the code remains the same
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:

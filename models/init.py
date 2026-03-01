@@ -1,4 +1,4 @@
-from app import db
+from extensions import db
 from models.user import User
 from models.daily_plan import DailyPlan
 from models.lead import Lead
