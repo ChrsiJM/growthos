@@ -1,9 +1,17 @@
 from flask import Flask
 from config import Config
+<<<<<<< HEAD
 from extensions import db, migrate, login_manager
+=======
+import os
 
+# Initialize extensions
+db = SQLAlchemy()
+migrate = Migrate()
+login_manager = LoginManager()
+>>>>>>> 1541e5fc2c38b2f7a15c0aac08747852012663d6
 
-def create_app( config_class=Config ):
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -14,9 +22,13 @@ def create_app( config_class=Config ):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
 
+<<<<<<< HEAD
     # Import models (after extensions are initialized)
+=======
+    # Import models
+>>>>>>> 1541e5fc2c38b2f7a15c0aac08747852012663d6
     from models import user, daily_plan, lead, project, idea, event, reflection, finance
-
+    
     # Register blueprints
     from routes.auth import auth_bp
     from routes.dashboard import dashboard_bp
@@ -27,7 +39,7 @@ def create_app( config_class=Config ):
     from routes.meetings import meetings_bp
     from routes.reflections import reflections_bp
     from routes.finance import finance_bp
-
+    
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/')
     app.register_blueprint(planner_bp, url_prefix='/planner')
@@ -47,7 +59,3 @@ def create_app( config_class=Config ):
             print(f"⚠️ Database tables may already exist: {e}")
 
     return app
-
-
-# For production with gunicorn
-app = create_app()
