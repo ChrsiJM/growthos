@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from flask import Blueprint
 from datetime import datetime, date
-from app import db
+from extensions import db
 from models.lead import Lead
 
 leads_bp = Blueprint('leads', __name__)

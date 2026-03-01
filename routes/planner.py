@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from flask import Blueprint
 from datetime import datetime, date, timedelta
-from app import db
+from extensions import db
 from models.daily_plan import DailyPlan
 
 planner_bp = Blueprint('planner', __name__)
